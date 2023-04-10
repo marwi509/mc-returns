@@ -58,6 +58,7 @@ function App() {
     Intl.NumberFormat.
   }*/
 
+  const a = 1
 
   return (<>
   <Row>
