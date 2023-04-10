@@ -16,7 +16,7 @@ function App() {
   const [monthlySavings, setMonthlySavings] = useState(5000)
   const [yearReturn, setYearReturn] = useState(8.5)
   const [stdDev, setStdDev] = useState(17.4)
-  const [samples, setSamples] = useState(10000)
+  const [samples, setSamples] = useState(100000)
 
   const [resultMap, setResultMap] = useState<Map<number, Result> |undefined>(undefined)
 
