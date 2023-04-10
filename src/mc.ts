@@ -68,15 +68,17 @@ export const simulateReturn = async (
         console.log(newMap)
         let lastMap = new Map<number, Result>()
         for (let i = 0; i <= 100; i ++) {
-            const d = newMap.get(i)
+            let d = newMap.get(i)
+            
             if (d == null) {
                 console.log(i + "null")
-            } else {
+                d = newMap.get(i - 1)!
+            }
                 console.log(i + "not null") 
                 d.sort((a,b) => a.diff - b.diff)
                 const res = d[0]
                 lastMap.set(i, res.result)
-            }
+            
             
         }
 
