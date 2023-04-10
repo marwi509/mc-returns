@@ -47,15 +47,18 @@ function App() {
     series: [
       {
         data: resultMap?.get(25)?.series,
-        type: 'line'
+        type: 'line',
+        name: '25th'
       },
       {
         data: resultMap?.get(50)?.series,
-        type: 'line'
+        type: 'line',
+        name: '50th'
       },
       {
         data: resultMap?.get(75)?.series,
-        type: 'line'
+        type: 'line',
+        name: '75th'
       },
     ]
   } : {};

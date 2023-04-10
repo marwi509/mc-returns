@@ -18,14 +18,16 @@ export const simulateReturn = async (
     samples: number
     ): Promise<Map<number, Result>> => {
         return new Promise( resolve => {
+        const bucketSize = (startValue + monthlySavings*years*12) / 10000
         const results = new Map<number, {result: Result, nbr: number}>()
         for (let i = 1; i <= samples; i ++) {
             if (i% 100000 === 0) {
                 console.log(i)
             }
 
+            
             const res = sample(years, yearReturn, startValue, stdDev, monthlySavings)
-            const destination = Math.round(res.endResult / 1_000)
+            const destination = Math.round(res.endResult / bucketSize)
             const existing = results.get(destination)
             if (existing == null) {
                 results.set(destination, {
@@ -108,7 +110,7 @@ const sample = (years: number,
             currentValue += monthlySavings
             noSavings *= ret
             saved += monthlySavings
-            series.push(currentValue)
+            series.push(Math.round(currentValue))
         }
 
         const resultingCagr = Math.pow(noSavings, 1/years)
