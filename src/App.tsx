@@ -31,6 +31,12 @@ function App() {
     xAxist.push(i)
   }
   const option = resultMap != null ? {
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      data: ['25th', '50th', '75th']
+    },
     xAxis: {
       type: 'category',
       data: xAxist
@@ -57,8 +63,19 @@ function App() {
   /*const formatNumber = (num: number): string => {
     Intl.NumberFormat.
   }*/
+  const formatNumber = (num: number): string => new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(num);
 
   const a = 1
+
+  const section = (result: Result, percentile: string) => <>
+  <Stack direction={'vertical'} gap={1}>
+    <h5>{percentile}:</h5>
+    <span>End result: {formatNumber(result.endResult)}</span>
+    <span>Total return: {formatNumber(result.totalReturn)}</span>
+    <span>Total saved: {formatNumber(result.saved)}</span>
+    <span>CAGR: {0.01 * Math.round((result.cagr - 1) * 10000)}%</span>
+    </Stack>
+  </>
 
   return (<>
   <Row>
@@ -147,12 +164,13 @@ function App() {
           <Card.Body>
             {resultMap != null && 
             <>
-            <p>10th: {resultMap.get(10)?.endResult}</p>
-            <p>25th: {resultMap.get(25)?.endResult}</p>
-            <p>50th: {resultMap.get(50)?.endResult}</p>
-            <p>75th: {resultMap.get(75)?.endResult}</p>
-            <p>90th: {resultMap.get(90)?.endResult}</p>
-            </>}
+            {section( resultMap.get(10)!, '10th')}
+            {section( resultMap.get(25)!, '25th')}
+            {section( resultMap.get(50)!, '50th')}
+            {section( resultMap.get(75)!, '75th')}
+            {section( resultMap.get(90)!, '90th')}
+            </>
+            }
           </Card.Body>
         </Card>
       </Col>

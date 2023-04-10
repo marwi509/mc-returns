@@ -96,7 +96,7 @@ const sample = (years: number,
         const monthlyStdDev = (stdDev / 100) / Math.sqrt(12)
         const monthlyReturn = ((yearReturn/100)/12) + 1
         let saved = 0
-        let noSavings = startValue
+        let noSavings = 1
         const gauss = new Gaussian(monthlyReturn, monthlyStdDev*monthlyStdDev)
         
         let series: number[] = [startValue]
@@ -109,12 +109,12 @@ const sample = (years: number,
             series.push(currentValue)
         }
 
-        const resultingCagr = Math.pow(noSavings / startValue, 1/years)
+        const resultingCagr = Math.pow(noSavings, 1/years)
         return {
-            endResult: currentValue, 
+            endResult: Math.round(currentValue), 
             cagr: resultingCagr, 
-            saved: saved, 
-            totalReturn: currentValue - saved,
+            saved: saved + startValue, 
+            totalReturn: currentValue - saved - startValue,
             series: series
         }
     }
