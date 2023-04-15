@@ -2,11 +2,15 @@ import { Gaussian } from "ts-gaussian"
 var _ = require('lodash');
 
 export interface Result {
+    biggestValueDrop: {from: number, to: number},
+    biggestIndexDrop: {from: number, to: number},
     endResult: number
     cagr: number
     saved: number
     totalReturn: number,
-    series: number[]
+    series: number[],
+    monthlyContributions: number,
+    endResultNoSavings: number,
 }
 
 export const simulateReturn = async (
@@ -19,6 +23,7 @@ export const simulateReturn = async (
     ): Promise<Map<number, Result>> => {
         return new Promise( resolve => {
         const bucketSize = (startValue + monthlySavings*years*12) / 10000
+        console.log(`bucket size ${bucketSize}`)
         const results = new Map<number, {result: Result, nbr: number}>()
         for (let i = 1; i <= samples; i ++) {
             if (i% 100000 === 0) {
@@ -91,7 +96,8 @@ export const simulateReturn = async (
 
     }
 
-const sample = (years: number, 
+const sample = (
+    years: number, 
     yearReturn: number, 
     startValue: number,
     stdDev: number,
@@ -103,6 +109,12 @@ const sample = (years: number,
         let noSavings = 1
         const gauss = new Gaussian(monthlyReturn, monthlyStdDev*monthlyStdDev)
         
+        let indexAth = 0
+        let valueAth = 0
+
+        let biggestIndexDrop = {from: 0, to: 0}
+        let biggestValueDrop = {from: 0, to: 0}
+
         let series: number[] = [startValue]
         for (let i = 1; i <= years * 12; i ++) {
             const ret = gauss.ppf(Math.random())
@@ -111,15 +123,38 @@ const sample = (years: number,
             noSavings *= ret
             saved += monthlySavings
             series.push(Math.round(currentValue))
+
+            if (noSavings >= indexAth) {
+                indexAth = noSavings
+            }
+            if (currentValue >= valueAth) {
+                valueAth = currentValue
+            }
+
+            let currentIndexDrop = indexAth - noSavings
+            let currentValueDrop = valueAth - currentValue
+
+            if (currentIndexDrop > biggestIndexDrop.from - biggestIndexDrop.to) {
+                biggestIndexDrop = {from: indexAth, to: noSavings}
+            }
+
+            if (currentValueDrop > biggestValueDrop.from - biggestValueDrop.to) {
+                biggestValueDrop = {from: valueAth, to: currentValue}
+            }
         }
 
         const resultingCagr = Math.pow(noSavings, 1/years)
+        
         return {
             endResult: Math.round(currentValue), 
             cagr: resultingCagr, 
             saved: saved + startValue, 
+            monthlyContributions: saved,
             totalReturn: currentValue - saved - startValue,
-            series: series
+            series: series,
+            biggestIndexDrop: biggestIndexDrop,
+            biggestValueDrop: biggestValueDrop,
+            endResultNoSavings: noSavings * startValue
         }
     }
 

@@ -60,7 +60,7 @@ function App() {
         type: 'line',
         name: '75th'
       },
-    ]
+    ],
   } : {};
 
   /*const formatNumber = (num: number): string => {
@@ -71,13 +71,25 @@ function App() {
   const a = 1
 
   const section = (result: Result, percentile: string) => <>
-  <Stack direction={'vertical'} gap={1}>
-    <h5>{percentile}:</h5>
-    <span>End result: {formatNumber(result.endResult)}</span>
-    <span>Total return: {formatNumber(result.totalReturn)}</span>
-    <span>Total saved: {formatNumber(result.saved)}</span>
-    <span>CAGR: {0.01 * Math.round((result.cagr - 1) * 10000)}%</span>
-    </Stack>
+  <Card>
+    <Card.Header>
+      <h5>{percentile}:</h5>
+    </Card.Header>
+    <Card.Body>
+      <Stack direction={'vertical'} gap={1}>
+        <span>End result: <strong>{formatNumber(result.endResult)}</strong></span>
+        <span>End result excl monthly contributions: {formatNumber(result.endResultNoSavings)}</span>
+        <span>Total monthly contributions: {formatNumber(result.monthlyContributions)}</span>
+        <span>Difference due to contributions: {formatNumber(result.endResult - result.endResultNoSavings)}</span>
+        <span>Total return: {formatNumber(result.totalReturn)}</span>
+        <span>Total saved: {formatNumber(result.saved)}</span>
+        <span>CAGR: {0.01 * Math.round((result.cagr - 1) * 10000)}%</span>
+        <span><strong>Drawdown</strong> (sample specific)</span>
+        <span>Biggest index drawdown: {0.01 * Math.round(10000 * (result.biggestIndexDrop.to / result.biggestIndexDrop.from - 1))}%</span>
+        <span>Biggest value drawdown: {formatNumber(result.biggestValueDrop.from)} to {formatNumber(result.biggestValueDrop.to)}  == {formatNumber(result.biggestValueDrop.from - result.biggestValueDrop.to)}</span>
+      </Stack>
+    </Card.Body>
+  </Card>
   </>
 
   return (<>
@@ -152,27 +164,32 @@ function App() {
 
     <Col lg={8}>
       {resultMap != null && 
-    <ReactECharts
-      option={option}
-      notMerge={true}
-      lazyUpdate={true}
-      theme={"theme_name"}/>
-}
+      <div>
+          <ReactECharts
+          style={{height: "500px"}}
+          option={option}
+          notMerge={true}
+          lazyUpdate={true}
+          theme={"theme_name"}/>
+      </div>
+      }
     </Col>
     </Row>
     <Row>
-      <Col lg={4}>
+      <Col lg={6}>
         <Card>
           <Card.Header>Results</Card.Header>
           <Card.Body>
             {resultMap != null && 
-            <>
-            {section( resultMap.get(10)!, '10th')}
-            {section( resultMap.get(25)!, '25th')}
-            {section( resultMap.get(50)!, '50th')}
-            {section( resultMap.get(75)!, '75th')}
-            {section( resultMap.get(90)!, '90th')}
-            </>
+            <Stack direction={'vertical'} gap={2}>
+              {section( resultMap.get(5)!, '5th')}
+              {section( resultMap.get(10)!, '10th')}
+              {section( resultMap.get(25)!, '25th')}
+              {section( resultMap.get(50)!, '50th')}
+              {section( resultMap.get(75)!, '75th')}
+              {section( resultMap.get(90)!, '90th')}
+              {section( resultMap.get(95)!, '95th')}
+            </Stack>
             }
           </Card.Body>
         </Card>
